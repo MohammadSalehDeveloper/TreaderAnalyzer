@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore TraderAnalyzer.slnx
+
+      - name: Build
+        run: dotnet build TraderAnalyzer.slnx --no-restore -c Release
+
+      - name: Unit Tests
+        run: dotnet test tests/Tests.Unit/Tests.Unit.csproj --no-build -c Release --logger trx
+
+      - name: Integration Tests
+        run: dotnet test tests/Tests.Integration/Tests.Integration.csproj --no-build -c Release --logger trx

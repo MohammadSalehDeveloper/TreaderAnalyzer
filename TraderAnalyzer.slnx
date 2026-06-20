@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/src/Web/">
+    <Project Path="src/Web/Web.App/Web.App.csproj" />
+    <Project Path="src/Web/Web.Components/Web.Components.csproj" />
+    <Project Path="src/Web/Web.Client/Web.Client.csproj" />
+  </Folder>
+  <Folder Name="/src/API/">
+    <Project Path="src/API/API.Gateway/API.Gateway.csproj" />
+    <Project Path="src/API/API.MarketData/API.MarketData.csproj" />
+    <Project Path="src/API/API.Trading/API.Trading.csproj" />
+    <Project Path="src/API/API.Account/API.Account.csproj" />
+    <Project Path="src/API/API.AI/API.AI.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/Core.Domain/Core.Domain.csproj" />
+    <Project Path="src/Core/Core.Application/Core.Application.csproj" />
+    <Project Path="src/Core/Core.Contracts/Core.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/Infra/">
+    <Project Path="src/Infra/Infra.Persistence/Infra.Persistence.csproj" />
+    <Project Path="src/Infra/Infra.Messaging/Infra.Messaging.csproj" />
+    <Project Path="src/Infra/Infra.ExternalFeeds/Infra.ExternalFeeds.csproj" />
+    <Project Path="src/Infra/Infra.Cache/Infra.Cache.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Tests.Unit/Tests.Unit.csproj" />
+    <Project Path="tests/Tests.Integration/Tests.Integration.csproj" />
+  </Folder>
+</Solution>
