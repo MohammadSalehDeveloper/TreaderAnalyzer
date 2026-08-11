@@ -6,9 +6,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="*" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="*" />
-    <PackageReference Include="MediatR" Version="12.*" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.17" />
   </ItemGroup>
 
   <PropertyGroup>
