@@ -1,6 +1,75 @@
 @API.Account_HostAddress = http://localhost:5065
 
-GET {{API.Account_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login
+POST {{API.Account_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "emailOrUserName": "trader@example.com",
+  "password": "SecurePass123"
+}
+
+### Logout
+POST {{API.Account_HostAddress}}/api/auth/logout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Forgot password
+POST {{API.Account_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "trader@example.com"
+}
+
+### Reset password
+POST {{API.Account_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "reset-token-from-email",
+  "newPassword": "NewSecurePass456"
+}
+
+### Google login
+POST {{API.Account_HostAddress}}/api/auth/google
+Content-Type: application/json
+
+{
+  "idToken": "google-id-token"
+}
+
+### Get profile
+GET {{API.Account_HostAddress}}/api/account/me
+Authorization: Bearer {{accessToken}}
+
+### Update profile
+PUT {{API.Account_HostAddress}}/api/account/profile
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Trader",
+  "phoneNumber": "+1-555-0100",
+  "displayName": "JT",
+  "timeZoneId": "America/New_York"
+}
+
+### Change password
+PUT {{API.Account_HostAddress}}/api/account/change-password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "SecurePass123",
+  "newPassword": "NewSecurePass456"
+}
+
+### Delete account
+DELETE {{API.Account_HostAddress}}/api/account
+Authorization: Bearer {{accessToken}}

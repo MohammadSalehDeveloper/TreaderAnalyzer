@@ -11,6 +11,8 @@ public interface IUserRepository : IRepository<User>
 
     Task<User?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default);
 
+    Task<User?> GetByGoogleSubjectIdAsync(string googleSubjectId, CancellationToken cancellationToken = default);
+
     Task<bool> EmailExistsAsync(string email, Guid? excludeUserId = null, CancellationToken cancellationToken = default);
 
     Task<bool> UserNameExistsAsync(string userName, Guid? excludeUserId = null, CancellationToken cancellationToken = default);

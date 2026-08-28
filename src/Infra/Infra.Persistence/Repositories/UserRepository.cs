@@ -37,6 +37,17 @@ public class UserRepository : Repository<User>, IUserRepository
             .FirstOrDefaultAsync(user => user.UserName == normalized, cancellationToken);
     }
 
+    public async Task<User?> GetByGoogleSubjectIdAsync(
+        string googleSubjectId,
+        CancellationToken cancellationToken = default)
+    {
+        var normalized = googleSubjectId.Trim();
+
+        return await DbSet
+            .Include(user => user.Balance)
+            .FirstOrDefaultAsync(user => user.GoogleSubjectId == normalized, cancellationToken);
+    }
+
     public async Task<bool> EmailExistsAsync(
         string email,
         Guid? excludeUserId = null,

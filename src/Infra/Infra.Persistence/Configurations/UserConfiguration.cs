@@ -45,6 +45,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(3)
             .IsFixedLength();
 
+        builder.Property(user => user.GoogleSubjectId)
+            .HasMaxLength(128);
+
         builder.Property(user => user.Role)
             .HasConversion<string>()
             .HasMaxLength(32)
@@ -65,6 +68,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(user => user.UserName)
             .IsUnique();
+
+        builder.HasIndex(user => user.GoogleSubjectId)
+            .IsUnique()
+            .HasFilter("[GoogleSubjectId] IS NOT NULL");
 
         builder.HasIndex(user => user.Role);
         builder.HasIndex(user => user.Status);

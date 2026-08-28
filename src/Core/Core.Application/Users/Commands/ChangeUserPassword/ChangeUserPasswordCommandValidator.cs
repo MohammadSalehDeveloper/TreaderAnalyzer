@@ -8,6 +8,10 @@ public sealed class ChangeUserPasswordCommandValidator : AbstractValidator<Chang
     {
         RuleFor(command => command.UserId).NotEmpty();
 
+        RuleFor(command => command.CurrentPassword)
+            .NotEmpty()
+            .MaximumLength(128);
+
         RuleFor(command => command.NewPassword)
             .NotEmpty()
             .MinimumLength(8)

@@ -30,6 +30,9 @@ public class User : AuditableEntity
 
     public DateTime? LastLoginAtUtc { get; private set; }
 
+    /// <summary>Google OAuth subject identifier when the account is linked to Google.</summary>
+    public string? GoogleSubjectId { get; private set; }
+
     public Balance? Balance { get; private set; }
 
     public string FullName => $"{FirstName} {LastName}".Trim();
@@ -212,6 +215,40 @@ public class User : AuditableEntity
 
         LastLoginAtUtc = DateTime.UtcNow;
         MarkUpdated();
+    }
+
+    public void LinkGoogleAccount(string googleSubjectId)
+    {
+        EnsureNotClosed();
+
+        if (string.IsNullOrWhiteSpace(googleSubjectId))
+            throw new DomainException("Google subject id is required.");
+
+        GoogleSubjectId = googleSubjectId.Trim();
+        MarkUpdated();
+    }
+
+    public static User CreateFromGoogle(
+        string email,
+        string userName,
+        string googleSubjectId,
+        string passwordHashPlaceholder,
+        string firstName,
+        string lastName,
+        string preferredCurrency = "USD")
+    {
+        var user = CreateTrader(
+            email,
+            userName,
+            passwordHashPlaceholder,
+            firstName,
+            lastName,
+            preferredCurrency);
+
+        user.LinkGoogleAccount(googleSubjectId);
+        user.Activate();
+
+        return user;
     }
 
     public void SoftDelete()

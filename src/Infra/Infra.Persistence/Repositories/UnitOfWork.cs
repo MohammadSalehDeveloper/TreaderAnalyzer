@@ -10,15 +10,21 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(
         AppDbContext context,
         IUserRepository users,
-        IBalanceRepository balances)
+        IBalanceRepository balances,
+        IRefreshTokenRepository refreshTokens,
+        IPasswordResetTokenRepository passwordResetTokens)
     {
         _context = context;
         Users = users;
         Balances = balances;
+        RefreshTokens = refreshTokens;
+        PasswordResetTokens = passwordResetTokens;
     }
 
     public IUserRepository Users { get; }
     public IBalanceRepository Balances { get; }
+    public IRefreshTokenRepository RefreshTokens { get; }
+    public IPasswordResetTokenRepository PasswordResetTokens { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

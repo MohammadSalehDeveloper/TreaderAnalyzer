@@ -21,7 +21,11 @@ public sealed class ChangeUserPasswordCommandHandler : IRequestHandler<ChangeUse
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundException(nameof(Domain.Entities.User), request.UserId);
 
+        if (!_passwordHasher.Verify(request.CurrentPassword, user.PasswordHash))
+            throw new UnauthorizedException("Current password is incorrect.");
+
         user.ChangePassword(_passwordHasher.Hash(request.NewPassword));
+        await _unitOfWork.RefreshTokens.RevokeAllForUserAsync(user.Id, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
