@@ -4,21 +4,37 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web.Client</title>
+    <title>TraderAnalyzer</title>
     <base href="/" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/forensics-loader.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="Web.Client.styles.css" rel="stylesheet" />
 </head>
 
 <body>
+    <div id="forensics-loader" aria-live="polite" aria-busy="true">
+        <canvas id="forensics-canvas" aria-hidden="true"></canvas>
+        <div class="forensics-corner tl"></div>
+        <div class="forensics-corner tr"></div>
+        <div class="forensics-corner bl"></div>
+        <div class="forensics-corner br"></div>
+        <div class="forensics-hud">
+            <div>
+                <p class="forensics-brand">TraderAnalyzer</p>
+                <p class="forensics-tagline">Forex charts · pattern detection</p>
+                <p class="forensics-status" id="forensics-status">Streaming EUR/USD candles…</p>
+                <div class="forensics-meter" aria-hidden="true">
+                    <span id="forensics-meter-fill"></span>
+                </div>
+                <p class="forensics-percent" id="forensics-percent">0%</p>
+            </div>
+        </div>
+    </div>
+
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div id="boot-placeholder" class="loading-progress" style="display:none" aria-hidden="true"></div>
     </div>
 
     <div id="blazor-error-ui">
@@ -26,7 +42,28 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+
+    <script src="js/trader-loader.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        (async function () {
+            try {
+                await Blazor.start({
+                    loadBootResource: function (type, name, defaultUri, integrity) {
+                        // Let Blazor handle fetching; progress CSS vars still update on #app
+                        return undefined;
+                    }
+                });
+            } catch (err) {
+                console.error(err);
+            } finally {
+                // Loader stays up for a full 10s animation before dismissing
+                if (window.__forensicsLoaderComplete) {
+                    window.__forensicsLoaderComplete();
+                }
+            }
+        })();
+    </script>
 </body>
 
 </html>

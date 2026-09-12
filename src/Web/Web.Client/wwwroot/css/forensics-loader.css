@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@600;700&display=swap');
+
+:root {
+    --forensic-bg: #070b10;
+    --forensic-teal: #2ec4b6;
+    --forensic-amber: #f4a261;
+    --forensic-mist: #9eb3c2;
+    --forensic-ink: #e8eef3;
+}
+
+html, body {
+    background: var(--forensic-bg);
+    margin: 0;
+    min-height: 100%;
+}
+
+#forensics-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background:
+        radial-gradient(ellipse 90% 70% at 50% 35%, #0c1822 0%, transparent 58%),
+        radial-gradient(ellipse 45% 40% at 78% 78%, rgba(38, 166, 154, 0.14) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 35% at 18% 72%, rgba(239, 83, 80, 0.1) 0%, transparent 45%),
+        var(--forensic-bg);
+    color: var(--forensic-ink);
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+#forensics-loader.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#forensics-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.forensics-hud {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: end center;
+    padding: 0 1.5rem 12vh;
+    pointer-events: none;
+    text-align: center;
+}
+
+.forensics-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    letter-spacing: 0.04em;
+    margin: 0 0 0.35rem;
+    text-shadow: 0 0 40px rgba(46, 196, 182, 0.35);
+}
+
+.forensics-tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--forensic-mist);
+    margin: 0 0 1.4rem;
+}
+
+.forensics-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--forensic-teal);
+    margin: 0 0 0.75rem;
+    min-height: 1.1em;
+}
+
+.forensics-meter {
+    width: min(280px, 70vw);
+    height: 2px;
+    margin: 0 auto;
+    background: rgba(158, 179, 194, 0.2);
+    overflow: hidden;
+}
+
+.forensics-meter > span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--forensic-teal), var(--forensic-amber));
+    transition: width 0.12s linear;
+}
+
+.forensics-percent {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--forensic-amber);
+    margin-top: 0.65rem;
+}
+
+.forensics-corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(46, 196, 182, 0.45);
+    pointer-events: none;
+}
+
+.forensics-corner.tl { top: 1.25rem; left: 1.25rem; border-right: 0; border-bottom: 0; }
+.forensics-corner.tr { top: 1.25rem; right: 1.25rem; border-left: 0; border-bottom: 0; }
+.forensics-corner.bl { bottom: 1.25rem; left: 1.25rem; border-right: 0; border-top: 0; }
+.forensics-corner.br { bottom: 1.25rem; right: 1.25rem; border-left: 0; border-top: 0; }
+
+@media (max-width: 640px) {
+    .forensics-hud {
+        padding-bottom: 10vh;
+    }
+
+    .forensics-tagline {
+        letter-spacing: 0.14em;
+    }
+}
