@@ -120,9 +120,9 @@ flowchart TB
 | Validation | FluentValidation 11 |
 | Mapping | AutoMapper 14 |
 | ORM | Entity Framework Core 9 |
-| Database | SQL Server |
+| Database | SQL Server 2022 (Docker Linux image; PostgreSQL planned) |
 | Password hashing | ASP.NET Core Identity `PasswordHasher` |
-| Containerization | Docker (multi-stage Dockerfiles per API) |
+| Containerization | Docker (API Dockerfiles + Compose SQL Server) |
 
 ---
 
@@ -260,7 +260,7 @@ Each command has a **handler** and a **FluentValidation validator**.
 
 **Design-time factory**
 
-- `AppDbContextFactory` enables EF Core CLI migrations (`dotnet ef migrations add`)
+- `AppDbContextFactory` enables EF Core CLI migrations (`dotnet ef migrations add`) against local Docker SQL Server unless `ConnectionStrings__DefaultConnection` is set
 
 ### Database schema (configured, migrations not yet added)
 
@@ -287,20 +287,21 @@ builder.Services.AddApplication();
 builder.Services.AddPersistence(connectionString);
 ```
 
-**Configuration** (`appsettings.json`):
+**Configuration** (`appsettings.json` / `appsettings.Development.json`):
 
-- SQL Server connection string pointing to `TraderAnalyzer` database on `localhost:1433`
+- SQL Server connection string pointing to Docker `TraderAnalyzerDb` on `localhost:14333`
+- `Database:Provider` = `SqlServer` (PostgreSQL is not implemented yet)
 
 **Current state:**
 
 - Application and persistence layers are registered
 - OpenAPI is enabled in Development
-- Controllers exist but only the default `WeatherForecastController` scaffold is present
-- **User/account HTTP endpoints are not yet implemented**
+- Development startup applies EF migrations to the configured SQL Server
 
 **Docker:**
 
 - Multi-stage Dockerfile builds and publishes `API.Account.dll` on .NET 9, exposing port 8080
+- Compose SQL Server: `deploy/docker/docker-compose.sqlserver.yml`
 
 ---
 
@@ -351,20 +352,23 @@ Both projects reference updated package versions aligned with .NET 9.
 ### Prerequisites
 
 - .NET 9 SDK
-- SQL Server (local or Docker on port 1433)
-- Optional: Docker for containerized API runs
+- Docker (SQL Server 2022 Linux image published on host port 14333)
 
 ### Database
 
-1. Ensure SQL Server is running with credentials matching `appsettings.json`
-2. From the `Infra.Persistence` project directory, create and apply migrations:
+1. Start SQL Server:
+
+```powershell
+docker compose -f deploy/docker/docker-compose.sqlserver.yml up -d
+```
+
+2. Run `API.Account` in Development — it applies existing EF migrations on startup. To apply them without starting the API:
 
 ```bash
-dotnet ef migrations add InitialCreate --project src/Infra/Infra.Persistence --startup-project src/API/API.Account
 dotnet ef database update --project src/Infra/Infra.Persistence --startup-project src/API/API.Account
 ```
 
-> **Note:** EF Core migrations have not been created yet. The schema is fully configured via Fluent API; the commands above are the next step.
+Connection details must match Compose: `TraderAnalyzerDb` on `localhost,14333`, user `sa`. See [SQL Server](./infra/sql-server.md).
 
 ### Run API.Account
 
@@ -399,13 +403,12 @@ docker run -p 8080:8080 trader-analyzer-account
 - [x] Soft-delete support with global query filters
 - [x] Password hashing abstraction
 - [x] API.Account DI wiring (Application + Persistence)
+- [x] Docker SQL Server 2022 for local persistence
 
 ### Not yet done (recommended next steps)
 
-- [ ] EF Core migrations and database seeding
-- [ ] HTTP controllers/endpoints in `API.Account` (UsersController, etc.)
-- [ ] Global exception handling middleware (map `DomainException`, `NotFoundException`, `ValidationException` to HTTP status codes)
-- [ ] Authentication & authorization (JWT, role-based access)
+- [ ] PostgreSQL as a second persistence provider
+- [ ] Database seeding
 - [ ] Integration with `API.Gateway`
 - [ ] Unit and integration tests for domain and handlers
 - [ ] Trading, market data, and AI service implementations
@@ -426,11 +429,13 @@ docker run -p 8080:8080 trader-analyzer-account
 
 5. **Password security** — plain passwords never touch the domain or database. Hashing happens in the application handler via `IPasswordHasher`.
 
+6. **SQL Server in Docker first** — persistence uses EF Core SQL Server against a portable Linux image. PostgreSQL is a later second provider, not a replacement in this step.
+
 ---
 
 ## Security Note
 
-`appsettings.json` and `AppDbContextFactory` contain a **local development** SQL Server password. Do not use these credentials in production. Prefer environment variables or a secrets manager for deployed environments.
+`appsettings.json`, `AppDbContextFactory`, and Compose defaults contain a **local development** SQL Server password. Do not use these credentials in production. Prefer environment variables or a secrets manager for deployed environments.
 
 ---
 
@@ -439,7 +444,8 @@ docker run -p 8080:8080 trader-analyzer-account
 - [Agent protocols](./agent/PROTOCOLS.md) — no direct commits; architecture changes require approval; docs and tests are mandatory
 - [Changelog](./CHANGELOG.md) — explanation of each change / proposed commit
 - [Architecture docs](./architecture/README.md) · [Domain](./domain/README.md) · [Infra](./infra/README.md) · [Tech](./tech/README.md)
+- [SQL Server](./infra/sql-server.md) · [Persistence](./infra/persistence.md) · [Docker](./tech/docker.md)
 
 ---
 
-*Last updated: September 2026 — agent protocols added; feature status in this overview may lag the code.*
+*Last updated: September 2026 — Docker SQL Server as the local database; feature status in this overview may lag the code.*

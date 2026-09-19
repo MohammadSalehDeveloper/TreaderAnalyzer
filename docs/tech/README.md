@@ -3,3 +3,7 @@
 Add `docs/tech/{name}.md` when introducing a library, host, or platform choice (for example JWT, EF Core, Blazor, Docker, MediatR). Explain why it was chosen and where it is registered.
 
 New packages require architecture-guard approval.
+
+| Page | Topic |
+|------|--------|
+| [Docker](./docker.md) | Compose and SQL Server Linux image for local infrastructure |

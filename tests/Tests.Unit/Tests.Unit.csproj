@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\Core.Domain\Core.Domain.csproj" />
     <ProjectReference Include="..\..\src\Core\Core.Application\Core.Application.csproj" />
+    <ProjectReference Include="..\..\src\Infra\Infra.Persistence\Infra.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

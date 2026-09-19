@@ -2,6 +2,8 @@ using Core.Application;
 using API.Account.Extensions;
 using API.Account.Middleware;
 using Infra.Persistence;
+using Infra.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddApplication();
 builder.Services.AddPersistence(
     builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing."));
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing."),
+    builder.Configuration["Database:Provider"]);
 
 var app = builder.Build();
 
@@ -34,6 +37,9 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 app.UseHttpsRedirection();

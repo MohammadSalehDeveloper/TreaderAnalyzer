@@ -8,9 +8,12 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 {
     public AppDbContext CreateDbContext(string[] args)
     {
+        var connectionString =
+            Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? SqlServerConnectionString.LocalDockerDevelopment("TraderAnalyzer_Dev!23");
+
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseSqlServer(
-            "Server=localhost,1433;Database=TraderAnalyzer;User Id=sa;Password=TraderAnalyzer_Dev!23;TrustServerCertificate=True;Encrypt=False");
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new AppDbContext(optionsBuilder.Options);
     }

@@ -44,27 +44,27 @@ HTTP Request
 
 | Section | Purpose |
 |---------|---------|
-| `ConnectionStrings:DefaultConnection` | SQL Server connection |
+| `ConnectionStrings:DefaultConnection` | SQL Server connection (`localhost,14333` / Docker Compose `sqlserver`) |
+| `Database:Provider` | `SqlServer` (PostgreSQL is planned, not implemented) |
 | `Jwt:SigningKey` | Symmetric key for access tokens (change in production) |
 | `Jwt:Issuer` / `Jwt:Audience` | JWT validation |
 | `Jwt:AccessTokenLifetimeMinutes` | Access token expiry (default 15) |
 | `Google:ClientId` | Google OAuth client ID for ID token validation |
 | `Email:PasswordResetUrlBase` | Base URL embedded in reset emails |
 
-## Database Migration
+## Database
 
-After pulling these changes, create and apply a migration for new tables/columns:
+Start Docker SQL Server, then run the API in Development (migrations apply on startup):
 
-```bash
-dotnet ef migrations add AccountAuth --project src/Infra/Infra.Persistence --startup-project src/API/API.Account
-dotnet ef database update --project src/Infra/Infra.Persistence --startup-project src/API/API.Account
+```powershell
+docker compose -f deploy/docker/docker-compose.sqlserver.yml up -d
+dotnet run --project src/API/API.Account
 ```
 
-New schema objects:
-- `Users.GoogleSubjectId` column
-- `RefreshTokens` table
-- `PasswordResetTokens` table
+See [SQL Server](../../infra/sql-server.md).
 
 ## Related Documentation
 
 - [PROJECT_OVERVIEW.md](../../PROJECT_OVERVIEW.md) — solution-wide architecture
+- [SQL Server](../../infra/sql-server.md) — Docker database
+- [Persistence](../../infra/persistence.md) — EF Core provider

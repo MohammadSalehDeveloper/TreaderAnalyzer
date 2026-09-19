@@ -1,3 +1,6 @@
+include:
+  - path: docker-compose.sqlserver.yml
+
 services:
   gateway:
     build:
@@ -31,6 +34,13 @@ services:
       dockerfile: src/API/API.Account/Dockerfile
     ports:
       - "5003:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1434;Database=TraderAnalyzerDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-TraderAnalyzer_Dev!23};TrustServerCertificate=True;Encrypt=True;"
+      Database__Provider: SqlServer
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   ai:
     build:
@@ -38,14 +48,6 @@ services:
       dockerfile: src/API/API.AI/Dockerfile
     ports:
       - "5004:8080"
-
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: "TraderAnalyzer_Dev!23"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
 
   redis:
     image: redis:7-alpine
