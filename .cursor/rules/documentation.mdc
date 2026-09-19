@@ -1,0 +1,28 @@
+---
+description: Require changelog plus feature/layer/model/infra/tech docs for every change
+alwaysApply: true
+---
+
+# Documentation
+
+A change is not done until docs exist. Follow `.cursor/skills/write-project-docs`.
+
+## Every change (commit explanation)
+
+Add an entry under `## Unreleased` in `docs/CHANGELOG.md`: what changed, why, which layers, tests, and the **proposed commit message**.
+
+Also update `docs/PROJECT_OVERVIEW.md` when status, stack, or domain summary becomes wrong.
+
+## New work — create or update
+
+| Kind | Location | Mirror |
+|------|----------|--------|
+| Feature / story | `docs/api/{service}/features/{name}.md` | `docs/api/account/features/login.md` |
+| Controller / endpoint | `docs/api/{service}/controllers/` | `AuthController.md` |
+| Service overview | `docs/api/{service}/README.md` | account README |
+| Layer | `docs/architecture/{layer}.md` | dependency rules + example types |
+| Domain model | `docs/domain/{name}.md` | invariants, factories, relations |
+| Infrastructure | `docs/infra/{name}.md` | contract + implementation |
+| Technology | `docs/tech/{name}.md` | why this library/hosting choice |
+
+Link new pages from the parent README. Do not dump secrets into docs.

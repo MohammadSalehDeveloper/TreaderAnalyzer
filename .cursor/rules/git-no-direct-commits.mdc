@@ -1,0 +1,33 @@
+---
+description: Never commit; only propose a commit message to the user
+alwaysApply: true
+---
+
+# Git — no direct commits
+
+**Do not commit in this repository.** Only give the user a commit message they can apply themselves.
+
+## Forbidden
+
+```text
+git commit, git add (for committing), git push, git commit --amend
+git rebase, git reset --hard, git checkout --, SKIP HOOKS (--no-verify)
+```
+
+Read-only git is allowed: `git status`, `git diff`, `git log`.
+
+## When work is ready
+
+1. Confirm docs + tests are part of the change (do not propose a commit without them).
+2. Draft **one** message (1–2 sentences, **why** not file lists). Match existing history: descriptive prose, not ticket IDs unless the user used them.
+3. Show it in a fenced block. Do not run `git commit`.
+
+```text
+Add public registration so traders can create accounts without an admin.
+
+Document the register story and cover the handler with unit tests.
+```
+
+If the user says “commit this”, still **do not commit** — return the message again.
+
+If they insist on an exception, stop and confirm they want **you** to run `git commit`. Default remains: message only.

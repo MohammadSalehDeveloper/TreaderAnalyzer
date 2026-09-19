@@ -1,0 +1,12 @@
+---
+description: API hosts are composition roots — thin controllers, no business rules
+globs: src/API/**/*.cs
+alwaysApply: false
+---
+
+# API layer
+
+- Controllers: bind request → MediatR → HTTP result. No domain invariants here.
+- Register services in `Program.cs` (`AddApplication`, `AddPersistence`, JWT). Do not add packages or rewrite the host without approval.
+- Keep exception → status mapping in middleware (RFC 7807).
+- Request records live with the controller or as API models — not in Domain.

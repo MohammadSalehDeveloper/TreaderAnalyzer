@@ -1,0 +1,14 @@
+---
+description: Core.Domain purity — entities own invariants; no framework dependencies
+globs: src/Core/Core.Domain/**/*.cs
+alwaysApply: false
+---
+
+# Domain layer
+
+Changing entities, value objects, enums, or invariants requires **architecture-guard approval** first.
+
+- No references to Application, Contracts, Infra, EF, ASP.NET, or NuGet beyond BCL.
+- Business rules on the entity (`Activate`, `Debit`), not as anemic public setters.
+- Invalid transitions throw `DomainException`.
+- Identity via `Entity` / `AuditableEntity`. Do not add persistence attributes here.

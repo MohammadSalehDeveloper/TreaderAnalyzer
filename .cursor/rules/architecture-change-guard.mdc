@@ -1,0 +1,36 @@
+---
+description: Stop and ask before changing architecture, layers, infrastructure, domain, persistence, or packages
+alwaysApply: true
+---
+
+# Architecture change guard
+
+Do **not** change the following without first explaining the impact and asking. Wait for an explicit yes.
+
+## Requires approval
+
+- Solution/projects: add, remove, rename, retarget, or move projects
+- Layer boundaries or dependency direction (`*.csproj` references)
+- NuGet packages: add, remove, upgrade, or replace
+- **Domain**: entities, value objects, aggregates, invariants, enums, domain events
+- **Persistence**: DbContext, mappings, migrations, repositories, UoW, schema
+- **Infrastructure**: cache, messaging, feeds, email, token/hash implementations
+- New layers, folders-as-layers, or swapping CQRS/MediatR/EF/JWT approaches
+- Cross-layer types leaking (EF entities in API, HttpContext in Domain, etc.)
+
+## Allowed without asking (existing patterns only)
+
+- New Application command/query/validator/handler using **existing** domain + contracts
+- New API action that dispatches an **existing** MediatR request
+- Web.Client pages/components against **existing** APIs
+- Docs and tests that do not add packages
+
+## How to ask
+
+Stop implementation. Explain: what, why, which layer/files/packages, alternatives, and rollback. Then wait.
+
+```text
+This feature needs a new domain entity X and package Y.
+Options: (A) extend User  (B) new aggregate  (C) …
+Recommend B because … Approve before I change Domain / Persistence / packages?
+```

@@ -434,4 +434,12 @@ docker run -p 8080:8080 trader-analyzer-account
 
 ---
 
-*Last updated: August 2026 — reflects commit `228bacb` on `master`.*
+## Related documentation
+
+- [Agent protocols](./agent/PROTOCOLS.md) — no direct commits; architecture changes require approval; docs and tests are mandatory
+- [Changelog](./CHANGELOG.md) — explanation of each change / proposed commit
+- [Architecture docs](./architecture/README.md) · [Domain](./domain/README.md) · [Infra](./infra/README.md) · [Tech](./tech/README.md)
+
+---
+
+*Last updated: September 2026 — agent protocols added; feature status in this overview may lag the code.*

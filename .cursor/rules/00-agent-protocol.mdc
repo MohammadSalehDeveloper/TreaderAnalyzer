@@ -1,0 +1,33 @@
+---
+description: Master agent protocol for Trader Analyzer — hard stops, definition of done, and rule index
+alwaysApply: true
+---
+
+# Agent protocol (always)
+
+This repo’s protocols override default commit-on-request behavior.
+
+## Never
+
+- Commit, stage-for-commit, push, amend, rebase, or skip hooks
+- Change architecture, layers, infrastructure, domain, persistence, or packages without **question + explanation** and an explicit yes
+- Invert Clean Architecture dependencies
+- Ship a feature without docs and unit tests
+
+## Always
+
+1. Implement inside existing Clean Architecture + ASP.NET patterns
+2. Explain the change in `docs/CHANGELOG.md`
+3. Add/update feature, layer, model, infra, or tech docs under `docs/`
+4. Add/update unit tests in `tests/Tests.Unit`
+5. When done, **give a commit message** — do not run `git commit`
+
+## Rule index
+
+- Git: `.cursor/rules/git-no-direct-commits.mdc`
+- Architecture guard: `.cursor/rules/architecture-change-guard.mdc`
+- Engineering: `.cursor/rules/engineering-standards.mdc`
+- Docs: `.cursor/rules/documentation.mdc`
+- Tests: `.cursor/rules/unit-testing.mdc`
+
+Skills: `.cursor/skills/propose-commit`, `write-project-docs`, `write-unit-tests`

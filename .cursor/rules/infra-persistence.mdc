@@ -1,0 +1,13 @@
+---
+description: Infrastructure implements contracts; schema and package changes need approval
+globs: src/Infra/**/*.cs
+alwaysApply: false
+---
+
+# Infrastructure
+
+Implement `Core.Contracts` only. Do not leak EF types into Application or API beyond the composition root.
+
+**Ask first** before: new/changed DbSets, Fluent API, migrations, repositories, or packages (EF, JWT, Google, mail, cache, messaging).
+
+Repositories stay focused; saves go through `IUnitOfWork`.

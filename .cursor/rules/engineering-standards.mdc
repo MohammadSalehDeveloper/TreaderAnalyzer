@@ -1,0 +1,32 @@
+---
+description: Clean Architecture, Clean Code, design patterns, and ASP.NET / .NET 9 standards for this repo
+alwaysApply: true
+---
+
+# Engineering standards
+
+.NET 9, ASP.NET Core, Clean Architecture, Clean Code, and the design patterns already in the solution.
+
+## Clean Architecture
+
+- Domain has **zero** project references. Invariants live on entities (`User.CreateTrader`, `Balance.Debit`). Throw `DomainException`.
+- Application orchestrates via MediatR; FluentValidation on commands/queries; no EF, SQL, or ASP.NET types.
+- Contracts hold DTOs + interfaces (`IUserRepository`, `IPasswordHasher`). Infra implements them.
+- API is the composition root: thin controllers, JWT, middleware, `AddApplication` / `AddPersistence`.
+- Handlers never return persistence entities; map to DTOs.
+
+## Clean Code
+
+- Names match existing language (`UserName`, `RecordLogin`, `ConflictException`).
+- Small, single-purpose methods. Prefer domain methods over logic in handlers/controllers.
+- No commented-out code. No comments that narrate what the code already says.
+
+## Patterns in use (prefer these)
+
+CQRS + MediatR pipeline, Repository + Unit of Work, Factory methods on aggregates, Adapter (Infra), Options pattern, Result-via-exceptions (`DomainException`, `NotFoundException`, `ConflictException`).
+
+## ASP.NET
+
+- Minimal controllers: validate HTTP shape, `IMediator.Send`, map to status codes.
+- Keep auth, CORS, OpenAPI, and exception middleware in the API host — not in Core.
+- Secrets stay out of source; do not weaken JWT/password hashing.

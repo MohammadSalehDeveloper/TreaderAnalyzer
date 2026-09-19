@@ -1,0 +1,30 @@
+---
+description: Require unit tests for new functionality, features, stories, and infrastructure
+alwaysApply: true
+---
+
+# Unit tests required
+
+New functionality, features, stories, and infrastructure **must** include tests. Follow `.cursor/skills/write-unit-tests`.
+
+## Where
+
+- **Unit:** `tests/Tests.Unit` — xUnit, FluentAssertions, Moq. References Domain + Application.
+- **Integration:** `tests/Tests.Integration` — persistence/HTTP/Testcontainers. Use when the change needs the database or full pipeline.
+
+Do **not** add test packages without architecture-guard approval.
+
+## What to cover
+
+| Change | Tests |
+|--------|--------|
+| Domain behavior | Entity/value-object facts (happy + invariant failures) |
+| Command/query | Handler: success, not found, conflict, validation-related branches (mock contracts) |
+| New story | Tests named after the story; API mapping covered if logic is not only in the handler |
+| Infra | Unit-test pure helpers; otherwise integration tests. Ask before new packages. |
+
+Mirror source folders: `tests/Tests.Unit/Application/Auth/Commands/Login/`.
+
+Remove placeholder `UnitTest1` rather than adding more empty tests.
+
+Work is not done until `dotnet test tests/Tests.Unit` passes for the new tests.

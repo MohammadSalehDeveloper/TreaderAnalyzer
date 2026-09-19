@@ -1,0 +1,11 @@
+---
+description: Core.Contracts — DTOs and interfaces only; no implementations
+globs: src/Core/Core.Contracts/**/*.cs
+alwaysApply: false
+---
+
+# Contracts layer
+
+- DTOs and interfaces only (`IUserRepository`, `IPasswordHasher`, `UserDto`).
+- No handler logic, EF types, or ASP.NET types.
+- New interfaces/DTOs that force persistence or package changes: **stop and ask**.

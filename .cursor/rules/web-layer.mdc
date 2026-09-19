@@ -1,0 +1,11 @@
+---
+description: Web.Client is UI only — no domain rules; call existing APIs
+globs: src/Web/**/*.{cs,razor}
+alwaysApply: false
+---
+
+# Web layer
+
+- UI (Blazor) against existing API contracts. No domain invariants or EF.
+- New client packages or changing how the host is structured: **stop and ask**.
+- Auth pages stay in the existing auth layout/session pattern.

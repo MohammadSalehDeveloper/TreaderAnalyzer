@@ -1,0 +1,18 @@
+---
+description: Core.Application CQRS — MediatR handlers orchestrate; no persistence or HTTP
+globs: src/Core/Core.Application/**/*.cs
+alwaysApply: false
+---
+
+# Application layer
+
+```text
+Feature/Commands|Queries/Name/NameCommand.cs
+                              NameCommandHandler.cs
+                              NameCommandValidator.cs
+```
+
+- Handlers depend on **contracts**, not EF/DbContext/controllers.
+- Validators: FluentValidation. Pipeline already runs `ValidationBehavior`.
+- Hash passwords and issue tokens via `IPasswordHasher` / `ITokenService` — never in Domain.
+- New commands that need **new** domain or contract members: stop and ask (architecture guard).
