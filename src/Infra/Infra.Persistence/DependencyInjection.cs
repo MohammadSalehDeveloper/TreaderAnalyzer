@@ -10,9 +10,13 @@ namespace Infra.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddPersistence(
+        this IServiceCollection services,
+        string connectionString,
+        string? provider = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+        SupportedDatabaseProviders.EnsureCurrentlySupported(provider);
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(connectionString));
