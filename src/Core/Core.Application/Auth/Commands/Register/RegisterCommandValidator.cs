@@ -1,11 +1,11 @@
 using Core.Application.Common.Validation;
 using FluentValidation;
 
-namespace Core.Application.Users.Commands.CreateTrader;
+namespace Core.Application.Auth.Commands.Register;
 
-public sealed class CreateTraderCommandValidator : AbstractValidator<CreateTraderCommand>
+public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    public CreateTraderCommandValidator()
+    public RegisterCommandValidator()
     {
         RuleFor(command => command.Email)
             .NotEmpty()

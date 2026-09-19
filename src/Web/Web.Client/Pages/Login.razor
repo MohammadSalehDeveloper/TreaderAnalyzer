@@ -1,0 +1,111 @@
+@page "/login"
+@layout AuthLayout
+@using System.ComponentModel.DataAnnotations
+@inject IAuthApiClient AuthApi
+@inject IAuthSession AuthSession
+@inject NavigationManager Navigation
+
+<PageTitle>Sign in · TraderAnalyzer</PageTitle>
+
+<div class="auth-card">
+    <header class="auth-header">
+        <p class="auth-eyebrow">Welcome back</p>
+        <h1>Sign in</h1>
+        <p class="auth-subtitle">Access your forex charts, patterns, and trade forensics.</p>
+    </header>
+
+    <EditForm Model="_model" OnValidSubmit="HandleLoginAsync" OnInvalidSubmit="HandleInvalid">
+        <DataAnnotationsValidator />
+
+        <div class="auth-field">
+            <label for="username">Username</label>
+            <InputText id="username"
+                       class="auth-input"
+                       @bind-Value="_model.Username"
+                       autocomplete="username"
+                       placeholder="trader or email" />
+            <ValidationMessage For="() => _model.Username" />
+        </div>
+
+        <div class="auth-field">
+            <div class="auth-label-row">
+                <label for="password">Password</label>
+                <a class="auth-link-inline" href="forgot-password">Forgot password?</a>
+            </div>
+            <div class="auth-password-wrap">
+                <input id="password"
+                       type="@(_showPassword ? "text" : "password")"
+                       class="auth-input"
+                       @bind="_model.Password"
+                       @bind:event="oninput"
+                       autocomplete="current-password"
+                       placeholder="••••••••" />
+                <button type="button" class="auth-reveal" @onclick="TogglePassword" aria-label="@(_showPassword ? "Hide password" : "Show password")">
+                    @(_showPassword ? "Hide" : "Show")
+                </button>
+            </div>
+            <ValidationMessage For="() => _model.Password" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(_formError))
+        {
+            <p class="auth-error" role="alert">@_formError</p>
+        }
+
+        <button type="submit" class="auth-submit" disabled="@_isSubmitting">
+            @(_isSubmitting ? "Signing in…" : "Sign in")
+        </button>
+    </EditForm>
+
+    <p class="auth-footer">
+        New here?
+        <a href="register">Create an account</a>
+    </p>
+</div>
+
+@code {
+    private readonly LoginModel _model = new();
+    private bool _showPassword;
+    private bool _isSubmitting;
+    private string? _formError;
+
+    private void TogglePassword() => _showPassword = !_showPassword;
+
+    private void HandleInvalid() => _formError = "Please fix the highlighted fields.";
+
+    private async Task HandleLoginAsync()
+    {
+        _formError = null;
+        _isSubmitting = true;
+        try
+        {
+            var response = await AuthApi.LoginAsync(new LoginRequest(_model.Username.Trim(), _model.Password));
+            await AuthSession.SetSessionAsync(response);
+            Navigation.NavigateTo("/");
+        }
+        catch (AuthApiException ex)
+        {
+            _formError = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _formError = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private sealed class LoginModel
+    {
+        [Required(ErrorMessage = "Username is required.")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters.")]
+        [MaxLength(256)]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required.")]
+        [MaxLength(128)]
+        public string Password { get; set; } = string.Empty;
+    }
+}

@@ -1,7 +1,43 @@
 ﻿@page "/"
+@inject IAuthSession AuthSession
+@inject IAuthApiClient AuthApi
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>TraderAnalyzer</h1>
 
-Welcome to your new app.
+@if (AuthSession.IsAuthenticated)
+{
+    <p>Signed in as <strong>@AuthSession.User!.UserName</strong> (@AuthSession.User.Email).</p>
+    <button class="btn btn-outline-secondary btn-sm" @onclick="LogoutAsync">Sign out</button>
+}
+else
+{
+    <p>Welcome. <a href="login">Sign in</a> or <a href="register">create an account</a>.</p>
+}
+
+@code {
+    protected override void OnInitialized() => AuthSession.Changed += OnAuthChanged;
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task LogoutAsync()
+    {
+        try
+        {
+            if (AuthSession.Tokens is not null)
+                await AuthApi.LogoutAsync(new LogoutRequest(AuthSession.Tokens.RefreshToken));
+        }
+        catch
+        {
+            // Still clear local session if API logout fails.
+        }
+
+        await AuthSession.ClearAsync();
+        Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose() => AuthSession.Changed -= OnAuthChanged;
+}

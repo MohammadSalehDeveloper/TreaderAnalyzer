@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Web.Components\Web.Components.csproj" />
+    <ProjectReference Include="..\..\Core\Core.Contracts\Core.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

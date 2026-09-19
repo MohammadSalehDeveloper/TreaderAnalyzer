@@ -1,0 +1,58 @@
+@inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject IJSRuntime Js
+
+<div class="auth-shell">
+    <aside class="auth-visual" aria-hidden="true">
+        <canvas id="login-chart-canvas" class="auth-chart"></canvas>
+        <div class="auth-visual-overlay">
+            <p class="auth-visual-brand">TraderAnalyzer</p>
+            <p class="auth-visual-tag">Live forex structure · pattern intel</p>
+            <ul class="auth-pair-ticker">
+                <li><span>EUR/USD</span><em class="up">+0.14%</em></li>
+                <li><span>GBP/JPY</span><em class="down">−0.22%</em></li>
+                <li><span>XAU/USD</span><em class="up">+0.41%</em></li>
+            </ul>
+        </div>
+    </aside>
+
+    <section class="auth-panel">
+        <div class="auth-panel-inner">
+            @Body
+        </div>
+    </section>
+</div>
+
+@code {
+    private IJSObjectReference? _chartModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            _chartModule = await Js.InvokeAsync<IJSObjectReference>("import", "./js/login-chart.js");
+            await _chartModule.InvokeVoidAsync("startLoginChart", "login-chart-canvas");
+        }
+        catch
+        {
+            // Chart is decorative; page remains usable without it.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_chartModule is null) return;
+
+        try
+        {
+            await _chartModule.InvokeVoidAsync("stopLoginChart");
+            await _chartModule.DisposeAsync();
+        }
+        catch
+        {
+            // Ignore dispose races during navigation.
+        }
+    }
+}

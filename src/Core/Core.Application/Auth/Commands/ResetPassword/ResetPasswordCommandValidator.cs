@@ -1,3 +1,4 @@
+using Core.Application.Common.Validation;
 using FluentValidation;
 
 namespace Core.Application.Auth.Commands.ResetPassword;
@@ -7,10 +8,6 @@ public sealed class ResetPasswordCommandValidator : AbstractValidator<ResetPassw
     public ResetPasswordCommandValidator()
     {
         RuleFor(command => command.Token).NotEmpty();
-
-        RuleFor(command => command.NewPassword)
-            .NotEmpty()
-            .MinimumLength(8)
-            .MaximumLength(128);
+        RuleFor(command => command.NewPassword).StrongPassword();
     }
 }

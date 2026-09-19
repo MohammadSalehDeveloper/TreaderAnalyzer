@@ -9,6 +9,19 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddAccountAuthentication(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WebClient", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5080",
+                "https://localhost:7034")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddApplication();
 builder.Services.AddPersistence(
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -24,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("WebClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

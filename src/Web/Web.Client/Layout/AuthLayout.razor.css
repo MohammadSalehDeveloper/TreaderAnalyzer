@@ -1,0 +1,122 @@
+.auth-shell {
+    --auth-ink: #152029;
+    --auth-muted: #5c7282;
+    --auth-teal: #1fa896;
+    --auth-teal-deep: #0f7668;
+    --auth-amber: #d97706;
+    --auth-line: #d7e2ea;
+    --auth-panel-bg: #f7fafc;
+    --auth-visual-bg: #070b10;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+    background: var(--auth-panel-bg);
+}
+
+.auth-visual {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 60% at 40% 30%, #0c1822 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(31, 168, 150, 0.18) 0%, transparent 50%),
+        var(--auth-visual-bg);
+    color: #e8eef3;
+}
+
+.auth-chart {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.auth-visual-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 2rem 2.25rem 2.5rem;
+    background: linear-gradient(to top, rgba(7, 11, 16, 0.92) 0%, rgba(7, 11, 16, 0.35) 70%, transparent 100%);
+    pointer-events: none;
+}
+
+.auth-visual-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+    letter-spacing: 0.04em;
+    margin: 0 0 0.4rem;
+}
+
+.auth-visual-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9eb3c2;
+    margin: 0 0 1.25rem;
+}
+
+.auth-pair-ticker {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+}
+
+.auth-pair-ticker li {
+    display: inline-flex;
+    gap: 0.55rem;
+    align-items: baseline;
+}
+
+.auth-pair-ticker span {
+    color: #c5d4de;
+}
+
+.auth-pair-ticker .up {
+    color: #2ec4b6;
+    font-style: normal;
+}
+
+.auth-pair-ticker .down {
+    color: #f07167;
+    font-style: normal;
+}
+
+.auth-panel {
+    display: grid;
+    place-items: center;
+    padding: 2.5rem 1.5rem;
+    background:
+        radial-gradient(ellipse 70% 50% at 85% 10%, rgba(31, 168, 150, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 10% 90%, rgba(217, 119, 6, 0.06) 0%, transparent 50%),
+        linear-gradient(165deg, #ffffff 0%, #f4f8fb 48%, #eef5f8 100%);
+}
+
+.auth-panel-inner {
+    width: min(100%, 24.5rem);
+}
+
+@media (max-width: 900px) {
+    .auth-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: 14rem 1fr;
+    }
+
+    .auth-visual-overlay {
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .auth-pair-ticker {
+        display: none;
+    }
+
+    .auth-panel {
+        place-items: start center;
+        padding-top: 1.75rem;
+    }
+}

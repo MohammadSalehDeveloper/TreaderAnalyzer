@@ -4,7 +4,9 @@ using Core.Application.Auth.Commands.ForgotPassword;
 using Core.Application.Auth.Commands.GoogleLogin;
 using Core.Application.Auth.Commands.Login;
 using Core.Application.Auth.Commands.Logout;
+using Core.Application.Auth.Commands.Register;
 using Core.Application.Auth.Commands.ResetPassword;
+using Core.Contracts.DTOs.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +27,7 @@ public sealed class AuthController : ControllerBase
     /// <summary>Sign in with email/user name and password.</summary>
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
@@ -34,6 +36,30 @@ public sealed class AuthController : ControllerBase
             cancellationToken);
 
         return Ok(result);
+    }
+
+    /// <summary>Register a new trader account and return auth tokens.</summary>
+    [HttpPost("register")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new RegisterCommand(
+                request.Email,
+                request.UserName,
+                request.Password,
+                request.FirstName,
+                request.LastName,
+                request.PreferredCurrency ?? "USD",
+                request.PhoneNumber,
+                request.DisplayName,
+                request.TimeZoneId),
+            cancellationToken);
+
+        return Created(string.Empty, result);
     }
 
     /// <summary>Sign out by revoking the refresh token.</summary>
@@ -81,7 +107,7 @@ public sealed class AuthController : ControllerBase
     /// <summary>Sign in or register using a Google ID token.</summary>
     [HttpPost("google")]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GoogleLogin(
         [FromBody] GoogleLoginRequest request,
@@ -94,6 +120,17 @@ public sealed class AuthController : ControllerBase
     public sealed record LoginRequest(
         [property: Required] string EmailOrUserName,
         [property: Required] string Password);
+
+    public sealed record RegisterRequest(
+        [property: Required, EmailAddress] string Email,
+        [property: Required] string UserName,
+        [property: Required] string Password,
+        [property: Required] string FirstName,
+        [property: Required] string LastName,
+        string? PreferredCurrency = "USD",
+        string? PhoneNumber = null,
+        string? DisplayName = null,
+        string? TimeZoneId = null);
 
     public sealed record LogoutRequest([property: Required] string RefreshToken);
 
