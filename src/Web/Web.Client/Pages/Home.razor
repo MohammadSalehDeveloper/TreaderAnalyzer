@@ -1,43 +1,124 @@
 ﻿@page "/"
-@inject IAuthSession AuthSession
-@inject IAuthApiClient AuthApi
-@inject NavigationManager Navigation
-@implements IDisposable
+@inject IJSRuntime Js
+@implements IAsyncDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>TraderAnalyzer</PageTitle>
 
-<h1>TraderAnalyzer</h1>
+<div class="home">
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <p class="eyebrow">Forex structure</p>
+            <h1 id="hero-title">Read the market before you trade it.</h1>
+            <p class="lede">
+                TraderAnalyzer is a workspace for forex charts, pattern detection, and trade forensics.
+                Watch structure form across panels, then let the AI system flag what changed.
+            </p>
+            <div class="hero-actions">
+                <SectionLink Target="trading" Class="hero-primary">See the panels</SectionLink>
+                <a class="hero-secondary" href="register">Create an account</a>
+            </div>
+        </div>
 
-@if (AuthSession.IsAuthenticated)
-{
-    <p>Signed in as <strong>@AuthSession.User!.UserName</strong> (@AuthSession.User.Email).</p>
-    <button class="btn btn-outline-secondary btn-sm" @onclick="LogoutAsync">Sign out</button>
-}
-else
-{
-    <p>Welcome. <a href="login">Sign in</a> or <a href="register">create an account</a>.</p>
-}
+        <div class="hero-stage" aria-hidden="true">
+            <canvas id="home-chart-canvas" class="hero-chart"></canvas>
+            <div class="hero-stage-caption">
+                <p>EUR/USD · sample structure</p>
+                <ul>
+                    <li><span>GBP/JPY</span><em class="down">−0.22%</em></li>
+                    <li><span>XAU/USD</span><em class="up">+0.41%</em></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="trading" class="band">
+        <div class="band-inner">
+            <p class="eyebrow">Workspace</p>
+            <h2>Trading panels and the AI system</h2>
+            <div class="split">
+                <article class="card">
+                    <p class="card-kicker">01</p>
+                    <h3>Trading panels</h3>
+                    <p>Keep more than one chart in view. Each panel holds a pair, its session, and the levels you are comparing.</p>
+                    <ul>
+                        <li>Several charts in one workspace</li>
+                        <li>Pair context next to the candle</li>
+                        <li>Session levels you can line up</li>
+                    </ul>
+                </article>
+
+                <article id="ai" class="card">
+                    <p class="card-kicker">02</p>
+                    <h3>AI system</h3>
+                    <p>The AI system reads the same candles as the panels and marks structure shifts so you can see what changed.</p>
+                    <ul>
+                        <li>Pattern detection on the open chart</li>
+                        <li>Marks when structure breaks or holds</li>
+                        <li>Sits beside the panel, not in another tool</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="platforms" class="band band-ink">
+        <div class="band-inner">
+            <p class="eyebrow">Where you work</p>
+            <h2>Platforms</h2>
+            <div class="platform-grid">
+                <article class="platform">
+                    <h3>Web</h3>
+                    <p>The terminal in the browser. Charts and panels without an install.</p>
+                </article>
+                <article id="download" class="platform">
+                    <h3>Desktop</h3>
+                    <p>The downloadable terminal for a dedicated screen. The installer ships with the desktop release.</p>
+                </article>
+                <article class="platform">
+                    <h3>Mobile</h3>
+                    <p>A companion for the pairs you follow when you are away from the desk.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+</div>
 
 @code {
-    protected override void OnInitialized() => AuthSession.Changed += OnAuthChanged;
+    private IJSObjectReference? _chartModule;
 
-    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
-
-    private async Task LogoutAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         try
         {
-            if (AuthSession.Tokens is not null)
-                await AuthApi.LogoutAsync(new LogoutRequest(AuthSession.Tokens.RefreshToken));
+            var nav = await Js.InvokeAsync<IJSObjectReference>("import", "./js/site-nav.js");
+            if (await nav.InvokeAsync<bool>("prefersReducedMotion"))
+                return;
+
+            _chartModule = await Js.InvokeAsync<IJSObjectReference>("import", "./js/login-chart.js");
+            await _chartModule.InvokeVoidAsync("startLoginChart", "home-chart-canvas");
         }
         catch
         {
-            // Still clear local session if API logout fails.
+            // Chart is decorative; the page remains usable without it.
         }
-
-        await AuthSession.ClearAsync();
-        Navigation.NavigateTo("/login");
     }
 
-    public void Dispose() => AuthSession.Changed -= OnAuthChanged;
+    public async ValueTask DisposeAsync()
+    {
+        if (_chartModule is null)
+            return;
+
+        try
+        {
+            await _chartModule.InvokeVoidAsync("stopLoginChart");
+            await _chartModule.DisposeAsync();
+        }
+        catch
+        {
+            // Ignore dispose races during navigation.
+        }
+    }
 }

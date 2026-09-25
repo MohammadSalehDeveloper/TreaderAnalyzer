@@ -1,0 +1,41 @@
+<a class="@Class" href="/#@Target" @onclick="OnClick" @onclick:preventDefault="true" @attributes="Extra">
+    @ChildContent
+</a>
+
+@code {
+    private static IJSObjectReference? _module;
+
+    [Parameter, EditorRequired]
+    public string Target { get; set; } = "";
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigate { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Extra { get; set; }
+
+    [Inject]
+    private IJSRuntime Js { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    private async Task OnClick()
+    {
+        await OnNavigate.InvokeAsync();
+
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var path = relative.Split('?', '#')[0];
+        if (!string.IsNullOrEmpty(path))
+            Navigation.NavigateTo("/#" + Target);
+
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./js/site-nav.js");
+        await _module.InvokeVoidAsync("scrollToId", Target);
+    }
+}

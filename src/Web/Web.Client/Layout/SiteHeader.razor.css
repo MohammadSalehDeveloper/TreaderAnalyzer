@@ -1,0 +1,233 @@
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #070b10;
+    color: #e8eef3;
+    border-bottom: 1px solid rgba(46, 196, 182, 0.28);
+    font-family: "Syne", system-ui, sans-serif;
+}
+
+.site-header-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 4.5rem;
+    padding: 0.65rem 1.5rem;
+    max-width: 76rem;
+    margin: 0 auto;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #e8eef3;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-size: 1.05rem;
+    flex: 0 0 auto;
+}
+
+.brand-mark {
+    width: 1.7rem;
+    height: 1.7rem;
+    display: block;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+}
+
+.site-nav ::deep a {
+    color: #c5d4de;
+    text-decoration: none;
+}
+
+.site-nav ::deep a:hover {
+    color: #2ec4b6;
+}
+
+.site-tools {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.site-search {
+    position: relative;
+}
+
+.site-search input {
+    width: 11rem;
+    border: 1px solid rgba(232, 238, 243, 0.16);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e8eef3;
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    outline: none;
+}
+
+.site-search input:focus {
+    border-color: #1fa896;
+    box-shadow: 0 0 0 3px rgba(31, 168, 150, 0.25);
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    width: 16rem;
+    margin: 0;
+    padding: 0.35rem;
+    list-style: none;
+    background: #101820;
+    border: 1px solid rgba(46, 196, 182, 0.28);
+    border-radius: 0.8rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.search-results button {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: #e8eef3;
+    border-radius: 0.55rem;
+    padding: 0.45rem 0.6rem;
+    cursor: pointer;
+}
+
+.search-results button:hover {
+    background: rgba(46, 196, 182, 0.12);
+}
+
+.search-results small {
+    display: block;
+    color: #8aa0b0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+}
+
+.search-empty {
+    padding: 0.55rem 0.6rem;
+    color: #8aa0b0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+}
+
+.icon-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(232, 238, 243, 0.18);
+    color: #e8eef3;
+    text-decoration: none;
+}
+
+.icon-button:hover {
+    color: #2ec4b6;
+    border-color: #1fa896;
+}
+
+.icon-button svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.who {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    color: #9eb3c2;
+}
+
+.login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    background: #1fa896;
+    color: #04120f;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92rem;
+    border: 0;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background: #2ec4b6;
+    color: #04120f;
+}
+
+.login-button-quiet {
+    background: transparent;
+    color: #e8eef3;
+    border: 1px solid rgba(232, 238, 243, 0.24);
+}
+
+.menu-button {
+    display: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(232, 238, 243, 0.18);
+    background: transparent;
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+}
+
+.menu-button span {
+    display: block;
+    width: 1rem;
+    height: 1.5px;
+    background: #e8eef3;
+}
+
+.site-drawer {
+    display: none;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0 1.5rem 1rem;
+    font-family: "IBM Plex Mono", monospace;
+}
+
+.site-drawer ::deep a {
+    color: #e8eef3;
+    text-decoration: none;
+    padding: 0.55rem 0;
+    border-top: 1px solid rgba(232, 238, 243, 0.08);
+}
+
+@media (max-width: 900px) {
+    .site-nav,
+    .who {
+        display: none;
+    }
+
+    .menu-button,
+    .site-drawer {
+        display: flex;
+    }
+
+    .site-search input {
+        width: 7.5rem;
+    }
+}

@@ -318,13 +318,11 @@ These services exist with default ASP.NET Core templates and Dockerfiles but do 
 
 ---
 
-## Web Frontend (Scaffold Only)
+## Web Frontend
 
-Three Blazor/web projects are in the solution but contain only initial scaffolding:
+`Web.Client` serves the public home page: a header (logo, Trading, Platforms, Hubs, About Us, search, download, Login), a footer, and three sections (hero animation, trading panels and the AI system, platforms). Auth screens stay on their own layout. See [Web layer](./architecture/web.md).
 
-- `Web.App`
-- `Web.Client`
-- `Web.Components`
+`Web.App` and `Web.Components` are still scaffolds.
 
 ---
 
@@ -404,6 +402,7 @@ docker run -p 8080:8080 trader-analyzer-account
 - [x] Password hashing abstraction
 - [x] API.Account DI wiring (Application + Persistence)
 - [x] Docker SQL Server 2022 for local persistence
+- [x] Web.Client public home page (header, footer, three sections)
 
 ### Not yet done (recommended next steps)
 
@@ -412,7 +411,7 @@ docker run -p 8080:8080 trader-analyzer-account
 - [ ] Integration with `API.Gateway`
 - [ ] Unit and integration tests for domain and handlers
 - [ ] Trading, market data, and AI service implementations
-- [ ] Web frontend UI
+- [ ] Trading workspace, hubs content, and the rest of the web product UI
 - [ ] CI/CD pipeline and deployment manifests in `deploy/`
 
 ---
@@ -443,9 +442,9 @@ docker run -p 8080:8080 trader-analyzer-account
 
 - [Agent protocols](./agent/PROTOCOLS.md) — no direct commits; architecture changes require approval; docs and tests are mandatory
 - [Changelog](./CHANGELOG.md) — explanation of each change / proposed commit
-- [Architecture docs](./architecture/README.md) · [Domain](./domain/README.md) · [Infra](./infra/README.md) · [Tech](./tech/README.md)
+- [Architecture docs](./architecture/README.md) · [Web](./architecture/web.md) · [Domain](./domain/README.md) · [Infra](./infra/README.md) · [Tech](./tech/README.md)
 - [SQL Server](./infra/sql-server.md) · [Persistence](./infra/persistence.md) · [Docker](./tech/docker.md)
 
 ---
 
-*Last updated: September 2026 — Docker SQL Server as the local database; feature status in this overview may lag the code.*
+*Last updated: September 2026 — public home page on Web.Client; feature status in this overview may lag the code.*

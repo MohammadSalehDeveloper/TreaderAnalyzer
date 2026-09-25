@@ -1,0 +1,176 @@
+@inject IAuthSession AuthSession
+@inject IAuthApiClient AuthApi
+@inject NavigationManager Navigation
+@inject IJSRuntime Js
+@implements IDisposable
+
+<header class="site-header">
+    <div class="site-header-bar">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="4" y="14" width="5" height="12" rx="1" fill="#2ec4b6" />
+                <rect x="13.5" y="6" width="5" height="20" rx="1" fill="#f07167" />
+                <rect x="23" y="10" width="5" height="16" rx="1" fill="#2ec4b6" />
+            </svg>
+            <span>TraderAnalyzer</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary">
+            <SectionLink Target="trading" OnNavigate="CloseMenu">Trading</SectionLink>
+            <SectionLink Target="platforms" OnNavigate="CloseMenu">Platforms</SectionLink>
+            <SectionLink Target="hubs" OnNavigate="CloseMenu">Hubs</SectionLink>
+            <SectionLink Target="about" OnNavigate="CloseMenu">About Us</SectionLink>
+        </nav>
+
+        <div class="site-tools">
+            <form class="site-search" @onsubmit="SubmitSearch" @onsubmit:preventDefault="true">
+                <label class="visually-hidden" for="site-search">Search</label>
+                <input id="site-search"
+                       type="search"
+                       placeholder="Search"
+                       autocomplete="off"
+                       @bind="_query"
+                       @bind:event="oninput"
+                       @onkeydown="OnSearchKey" />
+                @if (_query.Trim().Length > 0)
+                {
+                    <ul class="search-results" role="listbox">
+                        @if (Matches.Count == 0)
+                        {
+                            <li class="search-empty">No matches</li>
+                        }
+                        else
+                        {
+                            @foreach (var hit in Matches)
+                            {
+                                <li>
+                                    <button type="button" @onclick="() => OpenAsync(hit)">
+                                        <span>@hit.Title</span>
+                                        <small>@hit.Detail</small>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                }
+            </form>
+
+            <SectionLink Target="download" Class="icon-button" aria-label="Download" OnNavigate="CloseMenu">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    <path d="M8 10.5 12 14.5 16 10.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </SectionLink>
+
+            @if (AuthSession.IsAuthenticated)
+            {
+                <span class="who">@AuthSession.User!.UserName</span>
+                <button type="button" class="login-button login-button-quiet" @onclick="LogoutAsync">Sign out</button>
+            }
+            else
+            {
+                <a class="login-button" href="login">Login</a>
+            }
+
+            <button type="button" class="menu-button" aria-expanded="@_menuOpen" aria-label="Open menu" @onclick="ToggleMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    @if (_menuOpen)
+    {
+        <nav class="site-drawer" aria-label="Primary mobile">
+            <SectionLink Target="trading" OnNavigate="CloseMenu">Trading</SectionLink>
+            <SectionLink Target="platforms" OnNavigate="CloseMenu">Platforms</SectionLink>
+            <SectionLink Target="hubs" OnNavigate="CloseMenu">Hubs</SectionLink>
+            <SectionLink Target="about" OnNavigate="CloseMenu">About Us</SectionLink>
+        </nav>
+    }
+</header>
+
+@code {
+    private readonly SearchHit[] _catalog =
+    [
+        new("Trading", "Trading panels", "trading"),
+        new("AI system", "Pattern detection", "ai"),
+        new("Platforms", "Web, desktop, and mobile", "platforms"),
+        new("Download", "Desktop terminal", "download"),
+        new("Hubs", "Research and shared workspaces", "hubs"),
+        new("About Us", "What TraderAnalyzer is", "about"),
+        new("Login", "Sign in", "login")
+    ];
+
+    private string _query = "";
+    private bool _menuOpen;
+    private IJSObjectReference? _nav;
+
+    private IReadOnlyList<SearchHit> Matches =>
+        _catalog.Where(hit =>
+                hit.Title.Contains(_query.Trim(), StringComparison.OrdinalIgnoreCase)
+                || hit.Detail.Contains(_query.Trim(), StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+    protected override void OnInitialized() => AuthSession.Changed += OnAuthChanged;
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private void ToggleMenu() => _menuOpen = !_menuOpen;
+
+    private void CloseMenu() => _menuOpen = false;
+
+    private void OnSearchKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+            _query = "";
+    }
+
+    private async Task SubmitSearch()
+    {
+        var hit = Matches.FirstOrDefault();
+        if (hit is not null)
+            await OpenAsync(hit);
+    }
+
+    private async Task OpenAsync(SearchHit hit)
+    {
+        _query = "";
+        _menuOpen = false;
+
+        if (hit.Target == "login")
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0];
+        if (!string.IsNullOrEmpty(path))
+            Navigation.NavigateTo("/#" + hit.Target);
+
+        _nav ??= await Js.InvokeAsync<IJSObjectReference>("import", "./js/site-nav.js");
+        await _nav.InvokeVoidAsync("scrollToId", hit.Target);
+    }
+
+    private async Task LogoutAsync()
+    {
+        try
+        {
+            if (AuthSession.Tokens is not null)
+                await AuthApi.LogoutAsync(new LogoutRequest(AuthSession.Tokens.RefreshToken));
+        }
+        catch
+        {
+            // Still clear local session if API logout fails.
+        }
+
+        await AuthSession.ClearAsync();
+        Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose() => AuthSession.Changed -= OnAuthChanged;
+
+    private sealed record SearchHit(string Title, string Detail, string Target);
+}
