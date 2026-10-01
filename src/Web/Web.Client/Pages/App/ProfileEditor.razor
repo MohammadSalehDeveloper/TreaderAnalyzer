@@ -1,0 +1,155 @@
+@using System.ComponentModel.DataAnnotations
+@inject IAccountApiClient AccountApi
+@inject IAuthSession AuthSession
+
+<section class="panel-page">
+    <p class="panel-kicker">Trader</p>
+    <h1>Profile</h1>
+    <p class="panel-lead">Update the name and contact details on your account.</p>
+
+    @if (_loading)
+    {
+        <p class="panel-muted">Loading your profile…</p>
+    }
+    else
+    {
+        <EditForm class="panel-form" Model="_model" OnValidSubmit="SaveAsync" OnInvalidSubmit="HandleInvalid">
+            <DataAnnotationsValidator />
+
+            <div class="panel-field">
+                <label for="first-name">First name</label>
+                <InputText id="first-name" class="panel-input" @bind-Value="_model.FirstName" />
+                <ValidationMessage For="() => _model.FirstName" />
+            </div>
+
+            <div class="panel-field">
+                <label for="last-name">Last name</label>
+                <InputText id="last-name" class="panel-input" @bind-Value="_model.LastName" />
+                <ValidationMessage For="() => _model.LastName" />
+            </div>
+
+            <div class="panel-field">
+                <label for="display-name">Display name</label>
+                <InputText id="display-name" class="panel-input" @bind-Value="_model.DisplayName" />
+                <ValidationMessage For="() => _model.DisplayName" />
+            </div>
+
+            <div class="panel-field">
+                <label for="phone">Phone</label>
+                <InputText id="phone" class="panel-input" @bind-Value="_model.PhoneNumber" />
+                <ValidationMessage For="() => _model.PhoneNumber" />
+            </div>
+
+            <div class="panel-field">
+                <label for="timezone">Time zone</label>
+                <InputText id="timezone" class="panel-input" @bind-Value="_model.TimeZoneId" placeholder="America/New_York" />
+                <ValidationMessage For="() => _model.TimeZoneId" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(_formError))
+            {
+                <p class="panel-error" role="alert">@_formError</p>
+            }
+
+            <div class="panel-actions">
+                <button type="submit" class="panel-button" disabled="@_saving">
+                    @(_saving ? "Saving…" : "Save profile")
+                </button>
+                @if (!string.IsNullOrEmpty(_saved))
+                {
+                    <p class="panel-ok" role="status">@_saved</p>
+                }
+            </div>
+        </EditForm>
+    }
+</section>
+
+@code {
+    private readonly ProfileModel _model = new();
+    private bool _loading = true;
+    private bool _saving;
+    private string? _formError;
+    private string? _saved;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var profile = await AccountApi.GetProfileAsync();
+            _model.FirstName = profile.FirstName;
+            _model.LastName = profile.LastName;
+            _model.DisplayName = profile.DisplayName ?? string.Empty;
+            _model.PhoneNumber = profile.PhoneNumber ?? string.Empty;
+            _model.TimeZoneId = profile.TimeZoneId ?? string.Empty;
+        }
+        catch (ApiException ex)
+        {
+            _formError = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _formError = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void HandleInvalid() => _formError = "Please fix the highlighted fields.";
+
+    private async Task SaveAsync()
+    {
+        _formError = null;
+        _saved = null;
+        _saving = true;
+
+        try
+        {
+            var updated = await AccountApi.UpdateProfileAsync(new UpdateProfileRequest(
+                _model.FirstName.Trim(),
+                _model.LastName.Trim(),
+                BlankToNull(_model.PhoneNumber),
+                BlankToNull(_model.DisplayName),
+                BlankToNull(_model.TimeZoneId)));
+
+            await AuthSession.UpdateUserAsync(updated);
+            _saved = "Profile saved.";
+        }
+        catch (ApiException ex)
+        {
+            _formError = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _formError = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private static string? BlankToNull(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private sealed class ProfileModel
+    {
+        [Required(ErrorMessage = "First name is required.")]
+        [MaxLength(100)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required.")]
+        [MaxLength(100)]
+        public string LastName { get; set; } = string.Empty;
+
+        [MaxLength(150)]
+        public string DisplayName { get; set; } = string.Empty;
+
+        [MaxLength(32)]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [MaxLength(64)]
+        public string TimeZoneId { get; set; } = string.Empty;
+    }
+}

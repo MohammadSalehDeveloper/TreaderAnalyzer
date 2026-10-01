@@ -14,6 +14,7 @@ public interface IAuthSession
     event Action? Changed;
     Task InitializeAsync();
     Task SetSessionAsync(LoginResponseDto response);
+    Task UpdateUserAsync(UserDto user);
     Task ClearAsync();
 }
 
@@ -67,6 +68,26 @@ public sealed class AuthSession : IAuthSession
 
         var json = JsonSerializer.Serialize(new StoredAuth(response.Tokens, response.User), JsonOptions);
         await _js.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
+        Changed?.Invoke();
+    }
+
+    public async Task UpdateUserAsync(UserDto user)
+    {
+        if (Tokens is null)
+            return;
+
+        User = user;
+
+        try
+        {
+            var json = JsonSerializer.Serialize(new StoredAuth(Tokens, user), JsonOptions);
+            await _js.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
+        }
+        catch
+        {
+            // The in-memory profile is already updated.
+        }
+
         Changed?.Invoke();
     }
 

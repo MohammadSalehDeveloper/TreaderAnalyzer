@@ -118,27 +118,27 @@ public sealed class AuthController : ControllerBase
     }
 
     public sealed record LoginRequest(
-        [property: Required] string EmailOrUserName,
-        [property: Required] string Password);
+        [param: Required] string EmailOrUserName,
+        [param: Required] string Password);
 
     public sealed record RegisterRequest(
-        [property: Required, EmailAddress] string Email,
-        [property: Required] string UserName,
-        [property: Required] string Password,
-        [property: Required] string FirstName,
-        [property: Required] string LastName,
+        [param: Required, EmailAddress] string Email,
+        [param: Required] string UserName,
+        [param: Required] string Password,
+        [param: Required] string FirstName,
+        [param: Required] string LastName,
         string? PreferredCurrency = "USD",
         string? PhoneNumber = null,
         string? DisplayName = null,
         string? TimeZoneId = null);
 
-    public sealed record LogoutRequest([property: Required] string RefreshToken);
+    public sealed record LogoutRequest([param: Required] string RefreshToken);
 
-    public sealed record ForgotPasswordRequest([property: Required, EmailAddress] string Email);
+    public sealed record ForgotPasswordRequest([param: Required, EmailAddress] string Email);
 
     public sealed record ResetPasswordRequest(
-        [property: Required] string Token,
-        [property: Required] string NewPassword);
+        [param: Required] string Token,
+        [param: Required] string NewPassword);
 
-    public sealed record GoogleLoginRequest([property: Required] string IdToken);
+    public sealed record GoogleLoginRequest([param: Required] string IdToken);
 }

@@ -16,6 +16,7 @@ The **API.Account** microservice handles user authentication and account managem
 |------------|--------------|-----|
 | [AuthController](./controllers/AuthController.md) | `/api/auth` | Login, logout, password reset, Google OAuth |
 | [AccountController](./controllers/AccountController.md) | `/api/account` | Profile, change password, delete account |
+| [AdminUsersController](./controllers/AdminUsersController.md) | `/api/admin/users` | List, activate, and suspend users |
 
 ## Features (User Stories)
 
@@ -28,6 +29,8 @@ The **API.Account** microservice handles user authentication and account managem
 | Edit profile | `PUT /api/account/profile` | [edit-profile.md](./features/edit-profile.md) |
 | Delete account | `DELETE /api/account` | [delete-account.md](./features/delete-account.md) |
 | Google login | `POST /api/auth/google` | [google-login.md](./features/google-login.md) |
+| Create admin | `POST /api/admin/users` | [create-admin.md](./features/create-admin.md) |
+| Admin users | `GET /api/admin/users` | [admin-users.md](./features/admin-users.md) |
 
 ## Architecture
 

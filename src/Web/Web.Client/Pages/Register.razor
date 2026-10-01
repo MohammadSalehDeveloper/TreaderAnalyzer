@@ -125,7 +125,7 @@
                 _model.PreferredCurrency));
 
             await AuthSession.SetSessionAsync(response);
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo(PanelRoutes.For(response.User.Role));
         }
         catch (AuthApiException ex)
         {

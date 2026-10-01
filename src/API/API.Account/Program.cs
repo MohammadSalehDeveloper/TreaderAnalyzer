@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:5080",
+                "http://localhost:5088",
                 "https://localhost:7034")
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -25,9 +25,13 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddApplication();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
+var sqlPassword = builder.Configuration["Database:Password"]
+    ?? builder.Configuration["MSSQL_SA_PASSWORD"];
+
 builder.Services.AddPersistence(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing."),
+    SqlServerConnectionString.ApplyPassword(connectionString, sqlPassword),
     builder.Configuration["Database:Provider"]);
 
 var app = builder.Build();

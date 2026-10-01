@@ -86,13 +86,13 @@ public sealed class AccountController : ControllerBase
     }
 
     public sealed record UpdateProfileRequest(
-        [property: Required] string FirstName,
-        [property: Required] string LastName,
+        [param: Required] string FirstName,
+        [param: Required] string LastName,
         string? PhoneNumber = null,
         string? DisplayName = null,
         string? TimeZoneId = null);
 
     public sealed record ChangePasswordRequest(
-        [property: Required] string CurrentPassword,
-        [property: Required] string NewPassword);
+        [param: Required] string CurrentPassword,
+        [param: Required] string NewPassword);
 }

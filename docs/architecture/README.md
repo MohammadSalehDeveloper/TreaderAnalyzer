@@ -11,6 +11,6 @@ Write one page per layer when that layer’s role, dependencies, or public types
 | API | `src/API/*` | `.cursor/rules/api-layer.mdc` |
 | Web | `src/Web/*` | `.cursor/rules/web-layer.mdc` |
 
-The public home page, header, and footer are described in [web.md](./web.md).
+The public home page, header, footer, and signed-in panels are described in [web.md](./web.md).
 
 See [PROJECT_OVERVIEW.md](../PROJECT_OVERVIEW.md) for the current map. Persistence currently targets Docker SQL Server ([infra/sql-server.md](../infra/sql-server.md)). Agents must not change these boundaries without approval ([PROTOCOLS.md](../agent/PROTOCOLS.md)).

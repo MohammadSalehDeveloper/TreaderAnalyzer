@@ -297,6 +297,7 @@ builder.Services.AddPersistence(connectionString);
 - Application and persistence layers are registered
 - OpenAPI is enabled in Development
 - Development startup applies EF migrations to the configured SQL Server
+- `AdminUsersController` creates the first admin, lists users, and dispatches activate/suspend for role `Admin`
 
 **Docker:**
 
@@ -320,7 +321,7 @@ These services exist with default ASP.NET Core templates and Dockerfiles but do 
 
 ## Web Frontend
 
-`Web.Client` serves the public home page: a header (logo, Trading, Platforms, Hubs, About Us, search, download, Login), a footer, and three sections (hero animation, trading panels and the AI system, platforms). Auth screens stay on their own layout. See [Web layer](./architecture/web.md).
+`Web.Client` serves the public home page: a header (logo, Trading, Platforms, Hubs, About Us, search, download, Login), a footer, and three sections (hero animation, trading panels and the AI system, platforms). Auth screens stay on their own layout. After sign-in, traders open `/app` and admins open `/admin`. See [Web layer](./architecture/web.md).
 
 `Web.App` and `Web.Components` are still scaffolds.
 
@@ -403,6 +404,7 @@ docker run -p 8080:8080 trader-analyzer-account
 - [x] API.Account DI wiring (Application + Persistence)
 - [x] Docker SQL Server 2022 for local persistence
 - [x] Web.Client public home page (header, footer, three sections)
+- [x] Web.Client trader panel and admin user list
 
 ### Not yet done (recommended next steps)
 
@@ -434,7 +436,7 @@ docker run -p 8080:8080 trader-analyzer-account
 
 ## Security Note
 
-`appsettings.json`, `AppDbContextFactory`, and Compose defaults contain a **local development** SQL Server password. Do not use these credentials in production. Prefer environment variables or a secrets manager for deployed environments.
+The SQL Server password is not stored in `appsettings`. Set `Database__Password` or `MSSQL_SA_PASSWORD` in the environment, and `MSSQL_SA_PASSWORD` in `deploy/docker/.env` for Compose. Do not commit that file.
 
 ---
 
@@ -447,4 +449,4 @@ docker run -p 8080:8080 trader-analyzer-account
 
 ---
 
-*Last updated: September 2026 — public home page on Web.Client; feature status in this overview may lag the code.*
+*Last updated: October 2026 — trader and admin panels on Web.Client; feature status in this overview may lag the code.*

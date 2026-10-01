@@ -1,0 +1,8 @@
+@page "/admin"
+@layout PanelLayout
+
+<PageTitle>Users · TraderAnalyzer</PageTitle>
+
+<RoleGate RequiredRole="UserRole.Admin">
+    <UserList />
+</RoleGate>

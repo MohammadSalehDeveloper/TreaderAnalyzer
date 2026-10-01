@@ -4,6 +4,7 @@
     <Project Path="src/Web/Web.Components/Web.Components.csproj" />
     <Project Path="src/Web/Web.Client/Web.Client.csproj" />
   </Folder>
+  <Folder Name="/src/" />
   <Folder Name="/src/API/">
     <Project Path="src/API/API.Gateway/API.Gateway.csproj" />
     <Project Path="src/API/API.MarketData/API.MarketData.csproj" />

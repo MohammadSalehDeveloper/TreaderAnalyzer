@@ -1,0 +1,164 @@
+@inject IAdminUsersApiClient AdminUsers
+@inject IAuthSession AuthSession
+
+<section class="panel-page">
+    <p class="panel-kicker">Admin</p>
+    <h1>Users</h1>
+    <p class="panel-lead">Activate pending traders or suspend accounts that should not sign in.</p>
+
+    <div class="panel-filters">
+        <label>
+            Role
+            <select class="panel-input" @bind="_role" @bind:after="LoadAsync">
+                <option value="">All</option>
+                <option value="@UserRole.Admin">Admin</option>
+                <option value="@UserRole.Trader">Trader</option>
+            </select>
+        </label>
+        <label>
+            Status
+            <select class="panel-input" @bind="_status" @bind:after="LoadAsync">
+                <option value="">All</option>
+                <option value="@UserStatus.Pending">Pending</option>
+                <option value="@UserStatus.Active">Active</option>
+                <option value="@UserStatus.Suspended">Suspended</option>
+                <option value="@UserStatus.Closed">Closed</option>
+            </select>
+        </label>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <p class="panel-error" role="alert">@_error</p>
+    }
+
+    @if (_loading && _users.Count == 0)
+    {
+        <p class="panel-muted">Loading users…</p>
+    }
+    else if (_users.Count == 0)
+    {
+        <p class="panel-muted">No users match these filters.</p>
+    }
+    else
+    {
+        <div class="panel-table-wrap">
+            <table class="panel-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in _users)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.UserName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Role</td>
+                            <td><span class="status status-@user.Status.ToString().ToLowerInvariant()">@user.Status</span></td>
+                            <td>
+                                @if (CanActivate(user))
+                                {
+                                    <button type="button" class="panel-button" disabled="@_busy" @onclick="() => ActivateAsync(user.Id)">
+                                        Activate
+                                    </button>
+                                }
+                                else if (CanSuspend(user))
+                                {
+                                    <button type="button" class="panel-button-quiet" disabled="@_busy" @onclick="() => SuspendAsync(user.Id)">
+                                        Suspend
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@code {
+    private readonly List<UserDto> _users = [];
+    private string _role = string.Empty;
+    private string _status = string.Empty;
+    private bool _loading = true;
+    private bool _busy;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private bool CanActivate(UserDto user) =>
+        user.Status is UserStatus.Pending or UserStatus.Suspended;
+
+    private bool CanSuspend(UserDto user) =>
+        user.Status == UserStatus.Active && user.Id != AuthSession.User?.Id;
+
+    private async Task LoadAsync()
+    {
+        _error = null;
+        _loading = true;
+
+        try
+        {
+            var users = await AdminUsers.ListAsync(ParseRole(), ParseStatus());
+            _users.Clear();
+            _users.AddRange(users);
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _error = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task ActivateAsync(Guid userId) =>
+        await RunAsync(() => AdminUsers.ActivateAsync(userId));
+
+    private async Task SuspendAsync(Guid userId) =>
+        await RunAsync(() => AdminUsers.SuspendAsync(userId));
+
+    private async Task RunAsync(Func<Task> action)
+    {
+        _error = null;
+        _busy = true;
+
+        try
+        {
+            await action();
+            await LoadAsync();
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _error = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private UserRole? ParseRole() =>
+        Enum.TryParse<UserRole>(_role, out var role) ? role : null;
+
+    private UserStatus? ParseStatus() =>
+        Enum.TryParse<UserStatus>(_status, out var status) ? status : null;
+}

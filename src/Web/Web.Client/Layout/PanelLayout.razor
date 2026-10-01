@@ -1,0 +1,52 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject IAuthSession AuthSession
+@inject IAuthApiClient AuthApi
+@inject NavigationManager Navigation
+
+<div class="panel-shell">
+    <aside class="panel-side">
+        <a class="panel-brand" href="/">TraderAnalyzer</a>
+        <p class="panel-user">@AuthSession.User?.UserName</p>
+        <nav class="panel-nav" aria-label="Panel">
+            @if (AuthSession.User?.Role == UserRole.Admin)
+            {
+                <NavLink href="admin" Match="NavLinkMatch.All">Users</NavLink>
+            }
+            else
+            {
+                <NavLink href="app" Match="NavLinkMatch.All">Overview</NavLink>
+                <NavLink href="app/profile">Profile</NavLink>
+                <NavLink href="app/password">Password</NavLink>
+            }
+        </nav>
+        <button type="button" class="panel-signout" @onclick="LogoutAsync">Sign out</button>
+    </aside>
+    <main class="panel-main">
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized() => AuthSession.Changed += OnAuthChanged;
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task LogoutAsync()
+    {
+        try
+        {
+            if (AuthSession.Tokens is not null)
+                await AuthApi.LogoutAsync(new LogoutRequest(AuthSession.Tokens.RefreshToken));
+        }
+        catch
+        {
+            // Still clear the local session if the API logout fails.
+        }
+
+        await AuthSession.ClearAsync();
+        Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose() => AuthSession.Changed -= OnAuthChanged;
+}

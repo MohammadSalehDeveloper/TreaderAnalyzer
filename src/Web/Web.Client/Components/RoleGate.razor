@@ -1,0 +1,34 @@
+@inject IAuthSession AuthSession
+@inject NavigationManager Navigation
+
+@if (_ready)
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public UserRole RequiredRole { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _ready;
+
+    protected override void OnInitialized()
+    {
+        if (!AuthSession.IsAuthenticated || AuthSession.User is null)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        if (AuthSession.User.Role != RequiredRole)
+        {
+            Navigation.NavigateTo(PanelRoutes.For(AuthSession.User.Role));
+            return;
+        }
+
+        _ready = true;
+    }
+}

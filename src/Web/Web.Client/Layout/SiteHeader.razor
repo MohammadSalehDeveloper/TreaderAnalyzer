@@ -65,6 +65,7 @@
 
             @if (AuthSession.IsAuthenticated)
             {
+                <a class="login-button" href="@PanelRoutes.For(AuthSession.User!.Role)">Panel</a>
                 <span class="who">@AuthSession.User!.UserName</span>
                 <button type="button" class="login-button login-button-quiet" @onclick="LogoutAsync">Sign out</button>
             }
@@ -88,6 +89,10 @@
             <SectionLink Target="platforms" OnNavigate="CloseMenu">Platforms</SectionLink>
             <SectionLink Target="hubs" OnNavigate="CloseMenu">Hubs</SectionLink>
             <SectionLink Target="about" OnNavigate="CloseMenu">About Us</SectionLink>
+            @if (AuthSession.IsAuthenticated)
+            {
+                <a href="@PanelRoutes.For(AuthSession.User!.Role)" @onclick="CloseMenu">Panel</a>
+            }
         </nav>
     }
 </header>
@@ -101,7 +106,8 @@
         new("Download", "Desktop terminal", "download"),
         new("Hubs", "Research and shared workspaces", "hubs"),
         new("About Us", "What TraderAnalyzer is", "about"),
-        new("Login", "Sign in", "login")
+        new("Login", "Sign in", "login"),
+        new("Panel", "Your account", "panel")
     ];
 
     private string _query = "";
@@ -143,6 +149,14 @@
         if (hit.Target == "login")
         {
             Navigation.NavigateTo("/login");
+            return;
+        }
+
+        if (hit.Target == "panel")
+        {
+            Navigation.NavigateTo(AuthSession.IsAuthenticated && AuthSession.User is not null
+                ? PanelRoutes.For(AuthSession.User.Role)
+                : "/login");
             return;
         }
 

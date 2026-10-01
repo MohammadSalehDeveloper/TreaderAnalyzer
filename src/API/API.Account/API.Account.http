@@ -1,5 +1,18 @@
 @API.Account_HostAddress = http://localhost:5065
 
+### Create the first admin
+# No Authorization header until an admin already exists.
+POST {{API.Account_HostAddress}}/api/admin/users
+Content-Type: application/json
+
+{
+  "email": "ann@example.com",
+  "userName": "ann",
+  "password": "Secret123",
+  "firstName": "Ann",
+  "lastName": "Admin"
+}
+
 ### Login
 POST {{API.Account_HostAddress}}/api/auth/login
 Content-Type: application/json

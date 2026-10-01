@@ -1,0 +1,8 @@
+@page "/app/profile"
+@layout PanelLayout
+
+<PageTitle>Profile · TraderAnalyzer</PageTitle>
+
+<RoleGate RequiredRole="UserRole.Trader">
+    <ProfileEditor />
+</RoleGate>

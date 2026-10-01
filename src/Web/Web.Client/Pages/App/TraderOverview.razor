@@ -1,0 +1,74 @@
+@inject IAccountApiClient AccountApi
+
+<section class="panel-page">
+    <p class="panel-kicker">Trader</p>
+    <h1>Your panel</h1>
+    <p class="panel-lead">Account details and the balance tied to your preferred currency.</p>
+
+    @if (_loading)
+    {
+        <p class="panel-muted">Loading your account…</p>
+    }
+    else if (_error is not null)
+    {
+        <p class="panel-error" role="alert">@_error</p>
+    }
+    else if (_profile is not null)
+    {
+        <div class="panel-cards">
+            <article class="panel-card">
+                <h2>Account</h2>
+                <dl>
+                    <div><dt>Name</dt><dd>@_profile.FullName</dd></div>
+                    <div><dt>Username</dt><dd>@_profile.UserName</dd></div>
+                    <div><dt>Email</dt><dd>@_profile.Email</dd></div>
+                    <div>
+                        <dt>Status</dt>
+                        <dd><span class="status status-@_profile.Status.ToString().ToLowerInvariant()">@_profile.Status</span></dd>
+                    </div>
+                </dl>
+            </article>
+            <article class="panel-card">
+                <h2>Balance</h2>
+                @if (_profile.Balance is null)
+                {
+                    <p class="panel-muted">No balance on this account.</p>
+                }
+                else
+                {
+                    <p class="balance-total">@_profile.Balance.Total.ToString("N2") @_profile.Balance.Currency</p>
+                    <dl>
+                        <div><dt>Available</dt><dd>@_profile.Balance.Available.ToString("N2")</dd></div>
+                        <div><dt>Reserved</dt><dd>@_profile.Balance.Reserved.ToString("N2")</dd></div>
+                    </dl>
+                }
+            </article>
+        </div>
+    }
+</section>
+
+@code {
+    private UserDto? _profile;
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _profile = await AccountApi.GetProfileAsync();
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            _error = "Cannot reach the account API. Is API.Account running on port 5065?";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

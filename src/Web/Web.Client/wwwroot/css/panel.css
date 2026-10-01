@@ -1,0 +1,208 @@
+.panel-page {
+    max-width: 52rem;
+    font-family: "Syne", system-ui, sans-serif;
+}
+
+.panel-kicker {
+    margin: 0 0 0.35rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #1fa896;
+}
+
+.panel-page h1 {
+    margin: 0 0 0.4rem;
+    font-size: clamp(1.7rem, 3vw, 2.1rem);
+    letter-spacing: -0.03em;
+}
+
+.panel-lead,
+.panel-muted {
+    margin: 0 0 1.25rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #5c7282;
+}
+
+.panel-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.panel-card,
+.panel-form,
+.panel-table-wrap {
+    background: #fff;
+    border: 1px solid #d7e2ea;
+    border-radius: 1rem;
+    padding: 1.15rem 1.25rem;
+}
+
+.panel-card h2,
+.panel-form h2 {
+    margin: 0 0 0.85rem;
+    font-size: 1.05rem;
+}
+
+.panel-card dl {
+    margin: 0;
+}
+
+.panel-card dl div,
+.panel-filters {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-top: 1px solid #e6eef3;
+}
+
+.panel-card dt {
+    color: #5c7282;
+    font-size: 0.82rem;
+}
+
+.panel-card dd {
+    margin: 0;
+    font-weight: 700;
+}
+
+.balance-total {
+    margin: 0 0 0.5rem;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+}
+
+.status {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+.status-active { background: #d8f5ef; color: #0f7668; }
+.status-pending { background: #fff4d6; color: #92400e; }
+.status-suspended { background: #fde8ea; color: #9f1239; }
+.status-closed { background: #e6eef3; color: #5c7282; }
+
+.panel-form {
+    max-width: 32rem;
+}
+
+.panel-field {
+    margin-bottom: 1rem;
+}
+
+.panel-field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.panel-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d7e2ea;
+    border-radius: 0.65rem;
+    padding: 0.75rem 0.85rem;
+    font: inherit;
+    color: #152029;
+}
+
+.panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.panel-button,
+.panel-button-quiet {
+    min-height: 2.4rem;
+    padding: 0 0.95rem;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.panel-button {
+    border: 0;
+    background: #1fa896;
+    color: #04120f;
+}
+
+.panel-button:disabled,
+.panel-button-quiet:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.panel-button-quiet {
+    border: 1px solid #d7e2ea;
+    background: #fff;
+    color: #152029;
+}
+
+.panel-error {
+    margin: 0 0 1rem;
+    color: #9f1239;
+    font-size: 0.9rem;
+}
+
+.panel-ok {
+    margin: 0;
+    color: #0f7668;
+    font-size: 0.9rem;
+}
+
+.panel-filters {
+    justify-content: flex-start;
+    border: 0;
+    padding: 0 0 1rem;
+}
+
+.panel-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: #5c7282;
+}
+
+.panel-table-wrap {
+    overflow-x: auto;
+    padding: 0;
+}
+
+.panel-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.panel-table th,
+.panel-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e6eef3;
+    white-space: nowrap;
+}
+
+.panel-table th {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5c7282;
+}
+
+.panel-table td:last-child,
+.panel-table th:last-child {
+    text-align: right;
+}

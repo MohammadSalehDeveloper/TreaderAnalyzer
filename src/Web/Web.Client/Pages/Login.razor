@@ -81,7 +81,7 @@
         {
             var response = await AuthApi.LoginAsync(new LoginRequest(_model.Username.Trim(), _model.Password));
             await AuthSession.SetSessionAsync(response);
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo(PanelRoutes.For(response.User.Role));
         }
         catch (AuthApiException ex)
         {
