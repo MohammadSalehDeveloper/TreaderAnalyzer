@@ -18,9 +18,12 @@ Compose publishes **14333** on the host (container port stays `1433`) so a machi
 ## How to use
 
 ```powershell
+copy deploy\docker\.env.example deploy\docker\.env
 docker compose -f deploy/docker/docker-compose.sqlserver.yml up -d
 docker compose -f deploy/docker/docker-compose.sqlserver.yml ps
 ```
+
+Set `MSSQL_SA_PASSWORD` in `.env` before the first start. Compose does not ship a default password.
 
 Stop:
 

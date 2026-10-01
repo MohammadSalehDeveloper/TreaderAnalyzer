@@ -22,7 +22,7 @@ public class AddPersistenceTests
         var services = new ServiceCollection();
 
         var act = () => services.AddPersistence(
-            SqlServerConnectionString.LocalDockerDevelopment("TraderAnalyzer_Dev!23"),
+            SqlServerConnectionString.LocalDockerDevelopment("unit-test-password"),
             "PostgreSql");
 
         act.Should().Throw<NotSupportedException>();

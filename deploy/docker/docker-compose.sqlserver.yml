@@ -15,7 +15,7 @@ services:
     container_name: traderanalyzer-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-TraderAnalyzer_Dev!23}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in deploy/docker/.env}
       MSSQL_PID: Developer
     ports:
       - "${MSSQL_PORT:-14333}:1433"

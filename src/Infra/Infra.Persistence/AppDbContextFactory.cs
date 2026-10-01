@@ -8,9 +8,14 @@ public sealed class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var connectionString =
-            Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-            ?? SqlServerConnectionString.LocalDockerDevelopment("TraderAnalyzer_Dev!23");
+        var configured = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+        var password = Environment.GetEnvironmentVariable("Database__Password")
+            ?? Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD");
+        var connectionString = SqlServerConnectionString.ApplyPassword(
+            string.IsNullOrWhiteSpace(configured)
+                ? SqlServerConnectionString.LocalDockerWithoutPassword()
+                : configured,
+            password);
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseSqlServer(connectionString);

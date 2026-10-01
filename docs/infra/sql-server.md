@@ -20,19 +20,21 @@ The Microsoft SQL Server Linux image (`mcr.microsoft.com/mssql/server:2022-lates
 
 ## Start the database
 
-From the repo root:
+From the repo root, copy the env template and set a local SA password. `.env` is gitignored.
 
 ```powershell
+copy deploy\docker\.env.example deploy\docker\.env
 docker compose -f deploy/docker/docker-compose.sqlserver.yml up -d
 ```
 
-Wait until the container is healthy, then run API.Account against `localhost,14333`. In Development, the account API applies EF migrations on startup.
+Wait until the container is healthy. `appsettings` has the server, database, and user, and no password. Pass the same SA password into the account API, then run it. In Development it applies EF migrations on startup.
 
 ```powershell
+$env:Database__Password = "<the MSSQL_SA_PASSWORD from deploy/docker/.env>"
 dotnet run --project src/API/API.Account
 ```
 
-Override the SA password by copying `deploy/docker/.env.example` to `deploy/docker/.env` (`.env` is gitignored).
+`MSSQL_SA_PASSWORD` is accepted as well. EF tools use `ConnectionStrings__DefaultConnection` or those same password variables.
 
 ## Connection strings
 
@@ -43,9 +45,9 @@ Override the SA password by copying `deploy/docker/.env.example` to `deploy/dock
 
 Host port **14333** avoids clashing with other local SQL Server instances that already bind `1433`. Override with `MSSQL_PORT` in `deploy/docker/.env` if needed.
 
-Database name: `TraderAnalyzerDb`. User: `sa`. The Compose default password is for **local development only**.
+Database name: `TraderAnalyzerDb`. User: `sa`. The password is only in `deploy/docker/.env` or the process environment, never in `appsettings`.
 
-`AppDbContextFactory` uses the same local Docker connection unless `ConnectionStrings__DefaultConnection` is set.
+`AppDbContextFactory` uses the password-less local Docker host unless `ConnectionStrings__DefaultConnection` is set, and still requires `Database__Password` or `MSSQL_SA_PASSWORD` when that string has no password.
 
 ## Provider seam (Postgres later)
 
@@ -53,7 +55,7 @@ Database name: `TraderAnalyzerDb`. User: `sa`. The Compose default password is f
 
 ## What not to do
 
-- Do not point production at this SA password or the published `1433` mapping.
+- Do not commit the SA password in `appsettings`, Compose files, or source.
 - Do not add PostgreSQL packages or a second `DbContext` until that step is approved.
 - Do not invert layers: APIs stay composition roots; handlers still talk to contracts, not EF.
 

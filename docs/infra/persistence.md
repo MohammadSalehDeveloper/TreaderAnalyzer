@@ -28,7 +28,7 @@ Handlers continue to use `IUserRepository`, `IUnitOfWork`, and other contracts â
 
 - Do not expose EF types beyond the composition root.
 - Do not add Npgsql, a second context, or split migrations until dual-provider work is approved.
-- Do not put connection secrets in source for production; override with environment variables.
+- Do not put the SQL password in `appsettings`. The account API adds it from `Database__Password` or `MSSQL_SA_PASSWORD`.
 
 ## Related
 

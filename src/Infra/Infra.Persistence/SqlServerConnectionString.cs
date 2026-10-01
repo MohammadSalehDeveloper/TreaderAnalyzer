@@ -29,4 +29,21 @@ public static class SqlServerConnectionString
 
     public static string LocalDockerDevelopment(string password) =>
         Create(LocalDockerHost, Database, UserId, password, LocalDockerHostPort);
+
+    public static string LocalDockerWithoutPassword() =>
+        $"Server={LocalDockerHost},{LocalDockerHostPort};Database={Database};User Id={UserId};TrustServerCertificate=True;Encrypt=True;";
+
+    public static string ApplyPassword(string connectionString, string? password)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
+        if (connectionString.Contains("Password=", StringComparison.OrdinalIgnoreCase))
+            return connectionString;
+
+        if (string.IsNullOrWhiteSpace(password))
+            throw new InvalidOperationException(
+                "SQL Server password is not configured. Set Database__Password or MSSQL_SA_PASSWORD. Do not store the password in appsettings.");
+
+        return $"{connectionString.Trim().TrimEnd(';')};Password={password};";
+    }
 }
